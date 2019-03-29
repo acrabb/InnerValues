@@ -1,4 +1,4 @@
-package com.rnfts.rnfreshts;
+package com.andrecrabb.innervalues;
 
 import android.app.Application;
 
