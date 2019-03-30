@@ -8,13 +8,15 @@
  */
 
 import React, { Component } from "react"
-import { Button, Platform, StyleSheet, Text, View } from "react-native"
+import { Button, StyleSheet, Text, View } from "react-native"
 import * as Utils from "./src/util.ts"
 
-const instructions = Platform.select({
-  ios: "Press Cmd+R to reload,\n" + "Cmd+D or shake for dev menu",
-  android: "Double tap R on your keyboard to reload,\n" + "Shake or press menu button for dev menu",
-})
+/*
+  TODO
+  - show percentage
+  - have user swipe
+  - better layout of buttons
+*/
 
 type Props = {}
 type State = {
@@ -96,7 +98,19 @@ export default class App extends Component<Props, State> {
     this.handlePress(true)
   }
 
-  _onPressSkip = () => {}
+  _onPressSkip = () => {
+    let newCurrentValue = this.state.valueList.pop()
+    if (!newCurrentValue) {
+      return
+    }
+    let newValueList = this.state.valueList //.concat(this.state.currentValue!)
+    newValueList.unshift(this.state.currentValue!)
+
+    this.setState(previous => ({
+      currentValue: newCurrentValue,
+      valueList: newValueList,
+    }))
+  }
 
   render() {
     console.log("YES")
