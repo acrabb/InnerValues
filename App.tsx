@@ -41,7 +41,7 @@ export default class App extends Component<Props, State> {
   }
 
   componentWillMount() {
-    let values: string[] = require("./src/valuesShort.json")
+    let values: string[] = require("./src/values.json")
     Utils.shuffle(values)
     let currentValue = values.pop()
 
@@ -103,7 +103,7 @@ export default class App extends Component<Props, State> {
     if (!newCurrentValue) {
       return
     }
-    let newValueList = this.state.valueList //.concat(this.state.currentValue!)
+    let newValueList = this.state.valueList
     newValueList.unshift(this.state.currentValue!)
 
     this.setState(previous => ({
@@ -113,31 +113,44 @@ export default class App extends Component<Props, State> {
   }
 
   render() {
-    console.log("YES")
-    console.log(this.state.yesValues)
-    console.log("NO")
-    console.log(this.state.noValues)
+    // console.log("YES")
+    // console.log(this.state.yesValues)
+    // console.log("NO")
+    // console.log(this.state.noValues)
 
     const items = this.state.yesValues.map(function(item) {
-      return <Text style={styles.instructions}>{item}</Text>
+      return <Text style={styles.header}>{item}</Text>
     })
 
     return (
       <View style={styles.container}>
         {!this.state.done && (
-          <View>
-            <Text style={styles.instructions}>Round {this.state.round}</Text>
-            <Text style={styles.welcome}>{this.state.currentValue}</Text>
-            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "space-around",
+            }}
+          >
+            <Text style={styles.header}>
+              Round {this.state.round}: {this.state.valueList.length} left!
+            </Text>
+            <Text style={styles.value}>{this.state.currentValue}</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                width: "100%",
+              }}
+            >
               <Button title='No' onPress={this._onPressNo} />
+              <Button title='Skip' onPress={this._onPressSkip} />
               <Button title='Yes' onPress={this._onPressYes} />
             </View>
-            <Button title='Skip' onPress={this._onPressSkip} />
           </View>
         )}
         {this.state.done && (
           <View>
-            <Text style={styles.welcome}>Done!</Text>
+            <Text style={styles.value}>Done!</Text>
             {items}
           </View>
         )}
@@ -153,12 +166,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#F5FCFF",
   },
-  welcome: {
-    fontSize: 20,
+  value: {
+    fontSize: 40,
+    fontWeight: "700",
     textAlign: "center",
     margin: 10,
   },
-  instructions: {
+  header: {
+    fontSize: 20,
     textAlign: "center",
     color: "#333333",
     marginBottom: 5,
