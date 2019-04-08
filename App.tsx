@@ -13,9 +13,13 @@ import * as Utils from "./src/util.ts"
 
 /*
   TODO
+  - Remove duplicate values
+  - Store the user's values along the way. (so you can continue where you left off.)
+  - Store the user's values at every round (?)
+  - Store the users values when the reach the end.
   - show percentage
   - have user swipe
-  - better layout of buttons
+  - X better layout of buttons
 */
 
 type Props = {}
@@ -113,11 +117,6 @@ export default class App extends Component<Props, State> {
   }
 
   render() {
-    // console.log("YES")
-    // console.log(this.state.yesValues)
-    // console.log("NO")
-    // console.log(this.state.noValues)
-
     const items = this.state.yesValues.map(function(item) {
       return <Text style={styles.header}>{item}</Text>
     })
