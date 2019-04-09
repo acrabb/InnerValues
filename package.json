@@ -12,6 +12,7 @@
     "lint": "tslint 'source/**/*.{ts,tsx}'"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.2.4",
     "react": "16.6.3",
     "react-native": "^0.59.2",
     "react-navigation": "^3.3.2"
