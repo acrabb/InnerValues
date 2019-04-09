@@ -51,7 +51,8 @@ export default class HomeScreen extends Component<Props, State> {
           style={{
             // flex: 1,
             flexDirection: "row",
-            justifyContent: "space-between",
+            // alignItems: "space-between",
+            justifyContent: "space-between", // why you no work???
           }}
         >
           <Text style={styles.value}>Home</Text>

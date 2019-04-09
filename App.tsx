@@ -8,7 +8,7 @@
  */
 
 import React, { Component } from "react"
-import HomeScreen from "./src/HomeScreen"
+import AppNavigator from "./src/navigation/AppNavigator"
 
 /*
   TODO
@@ -31,6 +31,6 @@ export default class App extends Component<Props, State> {
   }
 
   render() {
-    return <HomeScreen />
+    return <AppNavigator />
   }
 }
