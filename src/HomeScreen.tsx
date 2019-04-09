@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from "react-native"
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import Session from "./Session"
 import store from "./store"
 
@@ -28,17 +28,47 @@ export default class HomeScreen extends Component<Props, State> {
   }
 
   _renderSession = ({ item, index }) => {
+    // TODO show done and not done differently
     return (
       <View>
-        <Text>Session: {item.id}</Text>
+        <Text style={styles.header}>Session</Text>
+        <Text style={styles.subHeader}>{item.chosenValues.join(", ")}</Text>
       </View>
     )
+  }
+
+  _onPressPlus = () => {
+    // navigate to session screen with new session
+  }
+  _onPressSession = (item: Session) => {
+    // navigate to session screen with tapped session
   }
 
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Text>Home</Text>
+        <View
+          style={{
+            // flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={styles.value}>Home</Text>
+          <TouchableOpacity
+            style={{
+              width: 50,
+              height: "100%",
+              backgroundColor: "#1ad9",
+              alignItems: "center",
+              borderRadius: 10,
+              // alignSelf: "flex-end",
+            }}
+            onPress={this._onPressPlus}
+          >
+            <Text style={{ fontSize: 50 }}>+</Text>
+          </TouchableOpacity>
+        </View>
         <FlatList
           data={this.state.sessions}
           renderItem={this._renderSession}
@@ -63,9 +93,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
     margin: 10,
   },
+  subHeader: {
+    fontSize: 15,
+    color: "#333333",
+    marginBottom: 5,
+    paddingLeft: 10,
+    fontStyle: "italic",
+  },
   header: {
     fontSize: 20,
-    textAlign: "center",
     color: "#333333",
     marginBottom: 5,
   },
