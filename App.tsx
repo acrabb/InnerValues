@@ -10,6 +10,7 @@
 import React, { Component } from "react"
 import { Button, StyleSheet, Text, View } from "react-native"
 import Session from "./src/Session"
+import store from "./src/store"
 
 /*
   TODO
@@ -24,9 +25,7 @@ import Session from "./src/Session"
 
 type Props = {}
 type State = {
-  currentValue?: string
   session: Session
-  done: boolean
 }
 export default class App extends Component<Props, State> {
   constructor(props: Props) {
@@ -36,12 +35,19 @@ export default class App extends Component<Props, State> {
 
     this.state = {
       session,
-      currentValue: session.currentValue,
-      done: false,
     }
   }
 
   componentWillMount() {
+    store.getSessions().then(sessions => {
+      // store.deleteSession(sessions[0])
+      if (sessions[0]) {
+        this.setState(previous => ({
+          session: sessions[0],
+          currentValue: sessions[0].currentValue,
+        }))
+      }
+    })
     // let values: string[] = require("./src/values.json")
     // Utils.shuffle(values)
     // let currentValue = values.pop()
@@ -53,39 +59,33 @@ export default class App extends Component<Props, State> {
 
   _onPressNo = () => {
     this.state.session.handleChoice(this.state.session.currentValue, false)
-    let done = false
-    if (!this.state.session.currentValue) {
-      done = true
-    }
 
-    this.setState(previous => ({
-      currentValue: this.state.session.currentValue,
-      done,
-    }))
+    this.setState(previous => ({}))
   }
 
   _onPressYes = () => {
     this.state.session.handleChoice(this.state.session.currentValue, true)
-    this.setState(previous => ({
-      currentValue: this.state.session.currentValue,
-    }))
+    this.setState(previous => ({}))
   }
 
   _onPressSkip = () => {
     this.state.session.handleSkip(this.state.session.currentValue)
-    this.setState(previous => ({
-      currentValue: this.state.session.currentValue,
-    }))
+    this.setState(previous => ({}))
   }
 
   render() {
     const items = this.state.session.chosenValues.map(function(item) {
-      return <Text style={styles.header}>{item}</Text>
+      return (
+        <Text key={item} style={styles.header}>
+          {item}
+        </Text>
+      )
     })
+    console.log(`RENDER: is done: ${this.state.session.isDone}`)
 
     return (
       <View style={styles.container}>
-        {!this.state.done && (
+        {!this.state.session.isDone && (
           <View
             style={{
               flex: 1,
@@ -96,7 +96,7 @@ export default class App extends Component<Props, State> {
               Round {this.state.session.currentRound().id}:{" "}
               {this.state.session.remainingValuesInCurrentRound().length} left!
             </Text>
-            <Text style={styles.value}>{this.state.currentValue}</Text>
+            <Text style={styles.value}>{this.state.session.currentValue}</Text>
             <View
               style={{
                 flexDirection: "row",
@@ -110,7 +110,7 @@ export default class App extends Component<Props, State> {
             </View>
           </View>
         )}
-        {this.state.done && (
+        {this.state.session.isDone && (
           <View>
             <Text style={styles.value}>Done!</Text>
             {items}

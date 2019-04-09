@@ -1,9 +1,11 @@
 import uuidv4 from "uuid/v4"
 import Round from "./Round"
+import { Saveable } from "./saveable"
+import Store from "./store"
 
 const NUM_VALUES_TARGET = 5
 
-export default class Session {
+export default class Session extends Saveable {
   id: string
   rounds: Round[]
   isDone: boolean = false
@@ -11,6 +13,7 @@ export default class Session {
   chosenValues: string[] = []
 
   constructor(initialList: string[]) {
+    super()
     this.id = uuidv4()
     this.rounds = [new Round(initialList, 1)]
     this.currentValue = this.setNextValue()!
@@ -35,6 +38,8 @@ export default class Session {
         // WE'RE DONE!
         this.chosenValues = this.currentRound().remainingValues()
         this.currentValue = undefined
+        this.isDone = true
+        Store.saveSession(this)
         return
       }
     }
@@ -43,11 +48,13 @@ export default class Session {
     if (!nextValue) {
       this.incrementRound()
     }
+    Store.saveSession(this)
   }
 
   handleSkip(value: string) {
     this.currentRound().triage.unshift(value)
     this.setNextValue()
+    Store.saveSession(this)
   }
 
   // returns the round we're in if we're in one
