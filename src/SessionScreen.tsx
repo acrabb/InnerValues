@@ -36,12 +36,14 @@ export default class SessionScreen extends Component<Props, State> {
 
   componentWillMount() {
     store.getSession(this.props.navigation.state.params.id).then(session => {
-      if (session) {
-        this.setState(previous => ({
-          session,
-          currentValue: session.currentValue,
-        }))
+      let theSession = session
+      if (!session) {
+        theSession = new Session(require("./valuesShort.json"))
       }
+      this.setState(previous => ({
+        session: theSession,
+        currentValue: theSession.currentValue,
+      }))
     })
   }
 

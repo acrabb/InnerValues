@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { TouchableWithoutFeedback } from "react-native-gesture-handler"
+import { NavigationScreenProp } from "react-navigation"
 import navConsts from "./navigation/navConsts"
 import Session from "./Session"
 import store from "./store"
@@ -11,7 +12,32 @@ type State = {
   refreshList: boolean
 }
 
+function onPressPlus(navigation: NavigationScreenProp<any, any>) {
+  navigation.navigate(navConsts.STACK_NAV_SESSION, { id: "" })
+}
+
 export default class HomeScreen extends Component<Props, State> {
+  static navigationOptions = ({ navigation }: NavigationScreenProp<any, any>) => {
+    return {
+      title: "Home", // makes no text to go back from child screen (ios)
+      headerStyle: { borderBottomWidth: 0 /*ios*/ },
+      headerRight: (
+        <View
+          style={{
+            flexDirection: "row",
+          }}
+        >
+          <TouchableOpacity style={styles.navButton} onPress={() => onPressPlus(navigation)}>
+            {/* <Material name='plus' size={25} color={theme.mainColor} /> */}
+            <Text style={{ fontSize: 30 }}>+</Text>
+          </TouchableOpacity>
+        </View>
+      ),
+    }
+  }
+
+  navWillFocusSub: any
+
   constructor(props) {
     super(props)
 
@@ -21,7 +47,7 @@ export default class HomeScreen extends Component<Props, State> {
     }
   }
 
-  componentWillMount() {
+  _onNavigationWillFocus = (payload: NavigationEventPayload) => {
     store.getSessions().then(sessions => {
       this.setState(previous => ({
         sessions,
@@ -29,10 +55,13 @@ export default class HomeScreen extends Component<Props, State> {
     })
   }
 
-  _onPressPlus = () => {
-    // navigate to session screen with new session
-    // const session = new Session(require("./valuesShort.json"))
+  componentWillMount() {
+    this.navWillFocusSub = this.props.navigation.addListener("willFocus", this._onNavigationWillFocus)
   }
+  componentWillUnmount() {
+    this.navWillFocusSub && this.navWillFocusSub.remove()
+  }
+
   _onPressSession = (item: Session) => {
     this.props.navigation.navigate(navConsts.STACK_NAV_SESSION, { id: item.uuid })
   }
@@ -50,29 +79,6 @@ export default class HomeScreen extends Component<Props, State> {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <View
-          style={{
-            // flex: 1,
-            flexDirection: "row",
-            // alignItems: "space-between",
-            justifyContent: "space-between", // why you no work???
-          }}
-        >
-          <Text style={styles.value}>Home</Text>
-          <TouchableOpacity
-            style={{
-              width: 50,
-              height: "100%",
-              backgroundColor: "#1ad9",
-              alignItems: "center",
-              borderRadius: 10,
-              // alignSelf: "flex-end",
-            }}
-            onPress={this._onPressPlus}
-          >
-            <Text style={{ fontSize: 50 }}>+</Text>
-          </TouchableOpacity>
-        </View>
         <FlatList
           data={this.state.sessions}
           renderItem={this._renderSession}
@@ -85,6 +91,12 @@ export default class HomeScreen extends Component<Props, State> {
 }
 
 const styles = StyleSheet.create({
+  navButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 50,
+    borderRadius: 10,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
