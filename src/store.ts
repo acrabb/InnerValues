@@ -140,6 +140,7 @@ async function clearAllStored(): Promise<void> {
 
 export default {
   saveSession,
+  getSession,
   getSessions,
   deleteSession,
 }

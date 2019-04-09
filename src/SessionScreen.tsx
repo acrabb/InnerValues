@@ -30,21 +30,16 @@ type State = {
 export default class SessionScreen extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    // TODO Move this logic back to cWM, and check if there are any saved Sessions in progress
-    const session = new Session(require("./valuesShort.json"))
 
-    this.state = {
-      session,
-    }
+    this.state = {}
   }
 
   componentWillMount() {
-    store.getSessions().then(sessions => {
-      // store.deleteSession(sessions[0])
-      if (sessions[0]) {
+    store.getSession(this.props.navigation.state.params.id).then(session => {
+      if (session) {
         this.setState(previous => ({
-          session: sessions[0],
-          currentValue: sessions[0].currentValue,
+          session,
+          currentValue: session.currentValue,
         }))
       }
     })
@@ -67,6 +62,13 @@ export default class SessionScreen extends Component<Props, State> {
   }
 
   render() {
+    if (!this.state.session) {
+      return (
+        <View>
+          <Text>Loading...</Text>
+        </View>
+      )
+    }
     const items = this.state.session.chosenValues.map(function(item) {
       return (
         <Text key={item} style={styles.header}>

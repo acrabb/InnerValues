@@ -1,5 +1,7 @@
 import React, { Component } from "react"
 import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { TouchableWithoutFeedback } from "react-native-gesture-handler"
+import navConsts from "./navigation/navConsts"
 import Session from "./Session"
 import store from "./store"
 
@@ -27,21 +29,22 @@ export default class HomeScreen extends Component<Props, State> {
     })
   }
 
+  _onPressPlus = () => {
+    // navigate to session screen with new session
+    // const session = new Session(require("./valuesShort.json"))
+  }
+  _onPressSession = (item: Session) => {
+    this.props.navigation.navigate(navConsts.STACK_NAV_SESSION, { id: item.uuid })
+  }
+
   _renderSession = ({ item, index }) => {
     // TODO show done and not done differently
     return (
-      <View>
+      <TouchableWithoutFeedback onPress={() => this._onPressSession(item)}>
         <Text style={styles.header}>Session</Text>
         <Text style={styles.subHeader}>{item.chosenValues.join(", ")}</Text>
-      </View>
+      </TouchableWithoutFeedback>
     )
-  }
-
-  _onPressPlus = () => {
-    // navigate to session screen with new session
-  }
-  _onPressSession = (item: Session) => {
-    // navigate to session screen with tapped session
   }
 
   render() {
