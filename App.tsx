@@ -8,7 +8,6 @@
  */
 
 import React, { Component } from "react"
-import { StyleSheet } from "react-native"
 import HomeScreen from "./src/HomeScreen"
 
 /*
@@ -31,41 +30,7 @@ export default class App extends Component<Props, State> {
     this.state = {}
   }
 
-  componentWillMount() {
-    // store.getSessions().then(sessions => {
-    //   // store.deleteSession(sessions[0])
-    //   if (sessions[0]) {
-    //     this.setState(previous => ({
-    //       session: sessions[0],
-    //       currentValue: sessions[0].currentValue,
-    //     }))
-    //   }
-    // })
-  }
-
   render() {
     return <HomeScreen />
-    // return <SessionScreen />
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5FCFF",
-  },
-  value: {
-    fontSize: 40,
-    fontWeight: "700",
-    textAlign: "center",
-    margin: 10,
-  },
-  header: {
-    fontSize: 20,
-    textAlign: "center",
-    color: "#333333",
-    marginBottom: 5,
-  },
-})
