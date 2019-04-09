@@ -14,11 +14,12 @@ import store from "./store"
 
 /*
   TODO
-  - Store the user's values along the way. (so you can continue where you left off.)
-  - Store the user's values at every round (?)
-  - Store the users values when the reach the end.
-  - show percentage
   - have user swipe
+  - make it pretty
+  - show percentage
+  - X jStore the user's values along the way. (so you can continue where you left off.)
+  - X Store the user's values at every round (?)
+  - X Store the users values when the reach the end.
   - X Remove duplicate values
   - X better layout of buttons
 */
