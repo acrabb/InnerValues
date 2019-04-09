@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import ActionSheet from "react-native-actionsheet"
 import { TouchableWithoutFeedback } from "react-native-gesture-handler"
 import { NavigationScreenProp } from "react-navigation"
 import navConsts from "./navigation/navConsts"
@@ -47,7 +48,7 @@ export default class HomeScreen extends Component<Props, State> {
     }
   }
 
-  _onNavigationWillFocus = (payload: NavigationEventPayload) => {
+  syncItems() {
     store.getSessions().then(sessions => {
       this.setState(previous => ({
         sessions,
@@ -55,9 +56,14 @@ export default class HomeScreen extends Component<Props, State> {
     })
   }
 
+  _onNavigationWillFocus = (payload: NavigationEventPayload) => {
+    this.syncItems()
+  }
+
   componentWillMount() {
     this.navWillFocusSub = this.props.navigation.addListener("willFocus", this._onNavigationWillFocus)
   }
+
   componentWillUnmount() {
     this.navWillFocusSub && this.navWillFocusSub.remove()
   }
@@ -66,19 +72,57 @@ export default class HomeScreen extends Component<Props, State> {
     this.props.navigation.navigate(navConsts.STACK_NAV_SESSION, { id: item.uuid })
   }
 
+  _onPressDeleteSession = (index: number) => {
+    store.deleteSession(this.state.sessions[index]).then(() => {
+      this.syncItems()
+    })
+  }
+
   _renderSession = ({ item, index }) => {
     // TODO show done and not done differently
     return (
-      <TouchableWithoutFeedback onPress={() => this._onPressSession(item)}>
+      <TouchableWithoutFeedback
+        onLongPress={() => this.showActionSheet(index)}
+        onPress={() => this._onPressSession(item)}
+      >
         <Text style={styles.header}>Session</Text>
         <Text style={styles.subHeader}>{item.chosenValues.join(", ")}</Text>
       </TouchableWithoutFeedback>
     )
   }
 
+  showActionSheet = (sessionIndex: number) => {
+    this.ActionSheet.show()
+    // haha this is kinda cool but kinda gross
+    this.ActionSheet.sessionIndex = sessionIndex
+  }
+
+  renderActionSheet() {
+    return (
+      <ActionSheet
+        ref={ref => (this.ActionSheet = ref)}
+        // title={"Which one do you like ?"}
+        options={["Open", "Delete", "Cancel"]}
+        destructiveButtonIndex={1}
+        onPress={(index: number) => {
+          /* do something */
+          switch (index) {
+            case 0:
+              this._onPressSession(this.state.sessions[this.ActionSheet.sessionIndex])
+              break
+            case 1:
+              this._onPressDeleteSession(this.ActionSheet.sessionIndex)
+              break
+          }
+        }}
+      />
+    )
+  }
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
+        {this.renderActionSheet()}
         <FlatList
           data={this.state.sessions}
           renderItem={this._renderSession}

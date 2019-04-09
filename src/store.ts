@@ -117,12 +117,12 @@ async function getSessions(): Promise<Session[]> {
 
 async function deleteSession(item: Session): Promise<void> {
   console.log(`DELETING daily item uuid: ${item.uuid}`)
-  await deleteItemWithKey(item.uuid)
+  return deleteItemWithKey(item.uuid)
 }
 
 async function deleteItemWithKey(key: string): Promise<void> {
   try {
-    await AsyncStorage.removeItem(key)
+    return AsyncStorage.removeItem(key)
   } catch (error) {
     console.error(error)
   }
