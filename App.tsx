@@ -9,115 +9,77 @@
 
 import React, { Component } from "react"
 import { Button, StyleSheet, Text, View } from "react-native"
-import * as Utils from "./src/util.ts"
+import Session from "./src/Session"
 
 /*
   TODO
-  - Remove duplicate values
   - Store the user's values along the way. (so you can continue where you left off.)
   - Store the user's values at every round (?)
   - Store the users values when the reach the end.
   - show percentage
   - have user swipe
+  - X Remove duplicate values
   - X better layout of buttons
 */
 
 type Props = {}
 type State = {
-  valueList: string[]
-  noValues: string[]
-  yesValues: string[]
   currentValue?: string
-  round: number
+  session: Session
   done: boolean
 }
 export default class App extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
+    // TODO Move this logic back to cWM, and check if there are any saved Sessions in progress
+    const session = new Session(require("./src/valuesShort.json"))
+
     this.state = {
-      valueList: [],
-      noValues: [],
-      yesValues: [],
-      currentValue: "",
-      round: 1,
+      session,
+      currentValue: session.currentValue,
       done: false,
     }
   }
 
   componentWillMount() {
-    let values: string[] = require("./src/values.json")
-    Utils.shuffle(values)
-    let currentValue = values.pop()
-
-    this.setState(previous => ({
-      valueList: values,
-      currentValue: currentValue,
-    }))
-  }
-
-  showValues() {
-    this.setState(previous => ({
-      done: true,
-    }))
-  }
-
-  incrementRound() {
-    if (this.state.yesValues.length <= 5) {
-      console.log("WE'RE DONE! :D")
-      this.showValues()
-      return
-    }
-
-    let newList = this.state.yesValues
-    Utils.shuffle(newList)
-    let newCurrentValue = newList.pop()
-
-    this.setState(previous => ({
-      yesValues: [],
-      valueList: newList,
-      currentValue: newCurrentValue,
-      round: previous.round + 1,
-    }))
-  }
-
-  handlePress(isYes: boolean) {
-    let addToList = isYes ? this.state.yesValues : this.state.noValues
-    addToList.push(this.state.currentValue!)
-    let newCurrentValue = this.state.valueList.pop()
-
-    if (!newCurrentValue) {
-      this.incrementRound()
-    } else {
-      this.setState(previous => ({
-        currentValue: newCurrentValue,
-      }))
-    }
+    // let values: string[] = require("./src/values.json")
+    // Utils.shuffle(values)
+    // let currentValue = values.pop()
+    // this.setState(previous => ({
+    //   valueList: values,
+    //   currentValue: currentValue,
+    // }))
   }
 
   _onPressNo = () => {
-    this.handlePress(false)
+    this.state.session.handleChoice(this.state.session.currentValue, false)
+    let done = false
+    if (!this.state.session.currentValue) {
+      done = true
+    }
+
+    this.setState(previous => ({
+      currentValue: this.state.session.currentValue,
+      done,
+    }))
   }
 
   _onPressYes = () => {
-    this.handlePress(true)
+    this.state.session.handleChoice(this.state.session.currentValue, true)
+    this.setState(previous => ({
+      currentValue: this.state.session.currentValue,
+    }))
   }
 
   _onPressSkip = () => {
-    let newCurrentValue = this.state.valueList.pop()
-    if (!newCurrentValue) {
-      return
-    }
-    let newValueList = this.state.valueList
-    newValueList.unshift(this.state.currentValue!)
-
+    this.state.session.handleSkip(this.state.session.currentValue)
     this.setState(previous => ({
-      currentValue: newCurrentValue,
-      valueList: newValueList,
+      currentValue: this.state.session.currentValue,
     }))
   }
 
   render() {
-    const items = this.state.yesValues.map(function(item) {
+    const items = this.state.session.chosenValues.map(function(item) {
       return <Text style={styles.header}>{item}</Text>
     })
 
@@ -131,7 +93,8 @@ export default class App extends Component<Props, State> {
             }}
           >
             <Text style={styles.header}>
-              Round {this.state.round}: {this.state.valueList.length} left!
+              Round {this.state.session.currentRound().id}:{" "}
+              {this.state.session.remainingValuesInCurrentRound().length} left!
             </Text>
             <Text style={styles.value}>{this.state.currentValue}</Text>
             <View
